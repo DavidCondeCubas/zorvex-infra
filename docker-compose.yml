@@ -1,0 +1,47 @@
+version: '3.1'
+services:
+  portainer:
+    image: portainer/portainer-ce:alpine 
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /docker/portainer/data:/data
+  app:
+    image: 'jc21/nginx-proxy-manager:2.9.18'
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - ./data/mysql:/var/lib/mysql  
+  heimdall:
+    image: 'lscr.io/linuxserver/heimdall'
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - /home/infrastructure/heimdall/config:/config
+    ports:
+      - 5080:80
+      - 5443:443
+    restart: unless-stopped
