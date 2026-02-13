@@ -24,7 +24,7 @@ services:
       - --log.level=INFO
       - --api.dashboard=true
       - --api.insecure=true
-      - --entrypoints.web.address=:809
+      - --entrypoints.web.address=:80
 
       # Docker discovery
       - --providers.docker=true
