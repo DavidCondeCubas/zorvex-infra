@@ -1,0 +1,62 @@
+version: "3.9"
+
+name: infrastructure
+
+networks:
+  public:
+    external: true
+    name: public
+
+volumes:
+  vault_data:
+
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik
+    restart: unless-stopped
+    networks:
+      - public
+    ports:
+      - "80:80"
+      - "8080:8080" # dashboard
+    command:
+      - --log.level=INFO
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --entrypoints.web.address=:80
+
+      # Docker discovery
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  vault:
+    image: hashicorp/vault:1.16
+    container_name: vault
+    restart: unless-stopped
+    networks:
+      - public
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    environment:
+      # DEV mode (para empezar). En prod, no uses -dev.
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN:-root}
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    command: vault server -dev
+    volumes:
+      - vault_data:/vault/file
+
+  consul:
+    image: hashicorp/consul:1.17
+    container_name: consul
+    restart: unless-stopped
+    networks:
+      - public
+    ports:
+      - "8500:8500"
+    command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0
