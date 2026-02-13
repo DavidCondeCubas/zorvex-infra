@@ -106,11 +106,5 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=public
-      - traefik.http.routers.kafka-ui.rule=PathPrefix(`/kafka-ui`)
-      - traefik.http.routers.kafka-ui.entrypoints=web
-      - traefik.http.middlewares.kafka-ui-stripprefix.stripprefix.prefixes=/kafka-ui
-      - traefik.http.routers.kafka-ui.middlewares=kafka-ui-stripprefix@docker
-      - traefik.http.services.kafka-ui.loadbalancer.server.port=8080
+    ports:
+      - "8091:8080"   # host:container
