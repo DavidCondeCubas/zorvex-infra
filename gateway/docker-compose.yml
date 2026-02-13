@@ -71,7 +71,6 @@ services:
     restart: unless-stopped
     networks:
       - public
-    ports:
     volumes:
       - kafka_data:/bitnami/kafka
     environment:
