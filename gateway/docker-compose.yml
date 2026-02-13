@@ -108,3 +108,16 @@ services:
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
     ports:
       - "8091:8080"   # host:container
+
+  apicurio:
+    image: apicurio/apicurio-registry-kafka:latest
+    container_name: apicurio
+    restart: unless-stopped
+    networks:
+      - public
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    ports:
+      - "8081:8080"   # opcional: acceso desde el host
