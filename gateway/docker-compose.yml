@@ -19,7 +19,7 @@ services:
       - public
     ports:
       - "809:80"
-      - "80809:8080" # dashboard
+      - "8089:8080" # dashboard
     command:
       - --log.level=INFO
       - --api.dashboard=true
